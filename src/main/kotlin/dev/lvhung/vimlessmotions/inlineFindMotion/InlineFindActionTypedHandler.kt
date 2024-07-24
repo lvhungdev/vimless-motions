@@ -55,7 +55,15 @@ object InlineFindActionTypedHandler : TypedActionHandler {
         else text.indexOfLast { m -> m == charTyped }
 
         if (index != -1) {
-            editor.caretModel.moveToOffset(textRange.startOffset + index + 1)
+            val newOffset = textRange.startOffset + index + 1
+
+            editor.caretModel.moveCaretRelatively(
+                newOffset - editor.caretModel.offset,
+                0,
+                editor.caretModel.primaryCaret.hasSelection(),
+                false,
+                true
+            )
         }
 
         unregisterHandlers()
