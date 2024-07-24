@@ -23,6 +23,7 @@ object InlineFindActionTypedHandler : TypedActionHandler {
     private var defaultRawTypedHandler: TypedActionHandler? = null
     private var defaultEscActionHandler: EditorActionHandler? = null
     private var direction = DIRECTION_RIGHT
+    private var selectionAnchorOffset: Int = -1
     private var charTyped: Char? = null
 
     override fun execute(editor: Editor, charTyped: Char, dataContext: DataContext) {
@@ -38,35 +39,39 @@ object InlineFindActionTypedHandler : TypedActionHandler {
     }
 
     fun findNext(editor: Editor) {
+        if (charTyped == null) return
+
         find(editor, direction)
+        unregisterHandlers()
     }
 
     fun findPrevious(editor: Editor) {
+        if (charTyped == null) return
+
         find(editor, direction * -1)
+        unregisterHandlers()
     }
 
     private fun find(editor: Editor, direction: Int) {
-        if (charTyped == null) return
-
         val textRange = getTextRange(editor, direction)
         val text = editor.document.getText(textRange)
 
         val index = if (direction == DIRECTION_RIGHT) text.indexOfFirst { m -> m == charTyped }
         else text.indexOfLast { m -> m == charTyped }
 
-        if (index != -1) {
-            val newOffset = textRange.startOffset + index + 1
+        if (index == -1) return
 
-            editor.caretModel.moveCaretRelatively(
-                newOffset - editor.caretModel.offset,
-                0,
-                editor.caretModel.primaryCaret.hasSelection(),
-                false,
-                true
-            )
+        val caret = editor.caretModel.primaryCaret
+        val newOffset = textRange.startOffset + index + 1
+
+        caret.moveToOffset(newOffset)
+
+        if (!caret.hasSelection()) return
+
+        if (selectionAnchorOffset != caret.selectionStart && selectionAnchorOffset != caret.selectionEnd) {
+            selectionAnchorOffset = if (direction == DIRECTION_RIGHT) caret.selectionStart else caret.selectionEnd
         }
-
-        unregisterHandlers()
+        caret.setSelection(newOffset, selectionAnchorOffset)
     }
 
     private fun getTextRange(editor: Editor, direction: Int): TextRange {
