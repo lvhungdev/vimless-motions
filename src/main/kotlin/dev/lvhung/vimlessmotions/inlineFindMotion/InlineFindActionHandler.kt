@@ -1,27 +1,14 @@
 package dev.lvhung.vimlessmotions.inlineFindMotion
 
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.editor.actionSystem.EditorActionManager
-import com.intellij.openapi.editor.actionSystem.TypedAction
-import com.intellij.openapi.editor.actionSystem.TypedActionHandler
 import com.intellij.openapi.util.TextRange
+import dev.lvhung.vimlessmotions.base.MotionHandler
 
-object InlineFindActionTypedHandler : TypedActionHandler {
+object InlineFindActionHandler : MotionHandler() {
     const val DIRECTION_RIGHT = 1
     const val DIRECTION_LEFT = -1
 
-    private val escActionHandler: EditorActionHandler = object : EditorActionHandler() {
-        override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
-            unregisterHandlers()
-        }
-    }
-
-    private var defaultRawTypedHandler: TypedActionHandler? = null
-    private var defaultEscActionHandler: EditorActionHandler? = null
     private var direction = DIRECTION_RIGHT
     private var selectionAnchorOffset: Int = -1
     private var charTyped: Char? = null
@@ -33,7 +20,7 @@ object InlineFindActionTypedHandler : TypedActionHandler {
     }
 
     fun process(direction: Int) {
-        registerHandlers()
+        init()
 
         this.direction = direction
     }
@@ -42,14 +29,14 @@ object InlineFindActionTypedHandler : TypedActionHandler {
         if (charTyped == null) return
 
         find(editor, direction)
-        unregisterHandlers()
+        dispose()
     }
 
     fun findPrevious(editor: Editor) {
         if (charTyped == null) return
 
         find(editor, direction * -1)
-        unregisterHandlers()
+        dispose()
     }
 
     private fun find(editor: Editor, direction: Int) {
@@ -86,21 +73,5 @@ object InlineFindActionTypedHandler : TypedActionHandler {
             val startLineOffset = document.getLineStartOffset(currentLine)
             return TextRange(startLineOffset, offset - 1)
         }
-    }
-
-    private fun registerHandlers() {
-        val typedAction = TypedAction.getInstance()
-        val actionManager = EditorActionManager.getInstance()
-
-        defaultRawTypedHandler = typedAction.rawHandler
-        typedAction.setupRawHandler(this)
-
-        defaultEscActionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ESCAPE)
-        actionManager.setActionHandler(IdeActions.ACTION_EDITOR_ESCAPE, escActionHandler)
-    }
-
-    private fun unregisterHandlers() {
-        TypedAction.getInstance().setupRawHandler(defaultRawTypedHandler!!)
-        EditorActionManager.getInstance().setActionHandler(IdeActions.ACTION_EDITOR_ESCAPE, defaultEscActionHandler!!)
     }
 }

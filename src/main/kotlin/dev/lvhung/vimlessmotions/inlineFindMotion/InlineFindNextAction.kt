@@ -5,6 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 
 class InlineFindNextAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-        InlineFindActionTypedHandler.process(InlineFindActionTypedHandler.DIRECTION_RIGHT)
+        InlineFindActionHandler.process(InlineFindActionHandler.DIRECTION_RIGHT)
     }
 }

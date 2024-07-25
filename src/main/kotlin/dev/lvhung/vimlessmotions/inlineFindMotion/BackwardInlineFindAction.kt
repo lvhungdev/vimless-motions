@@ -7,6 +7,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 class BackwardInlineFindAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
-        InlineFindActionTypedHandler.findPrevious(editor)
+        InlineFindActionHandler.findPrevious(editor)
     }
 }
