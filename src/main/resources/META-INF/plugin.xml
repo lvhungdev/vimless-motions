@@ -30,12 +30,12 @@
         <action id="dev.lvhung.vimlessmotions.inlineFindMotion.InlineFindNextAction"
                 class="dev.lvhung.vimlessmotions.inlineFindMotion.InlineFindNextAction"
                 text="Inline Find Next Motion">
-            <keyboard-shortcut keymap="$default" first-keystroke="alt M"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt F"/>
         </action>
         <action id="dev.lvhung.vimlessmotions.inlineFindMotion.InlineFindPrevAction"
                 class="dev.lvhung.vimlessmotions.inlineFindMotion.InlineFindPrevAction"
                 text="Inline Find Previous Motion">
-            <keyboard-shortcut keymap="$default" first-keystroke="shift alt M"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt F"/>
         </action>
         <action id="dev.lvhung.vimlessmotions.inlineFindMotion.ForwardInlineFindAction"
                 class="dev.lvhung.vimlessmotions.inlineFindMotion.ForwardInlineFindAction"
